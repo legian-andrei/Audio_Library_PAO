@@ -2,7 +2,7 @@ package org.example.Users;
 
 import java.sql.*;
 public class UserService {
-    private Connection conn;
+    private final Connection conn;
 
     public UserService(Connection connection) {
         conn = connection;
@@ -12,7 +12,7 @@ public class UserService {
      * Check if the user being registered is the first user in DB
      * @return whether the user is the first one registered or not
      */
-    public boolean isFirstUser() {
+    private boolean isFirstUser() {
         String query = "SELECT COUNT(*) AS userCount FROM Users;";
         try {
             Statement statement = conn.createStatement();
@@ -46,7 +46,11 @@ public class UserService {
             preparedStatement.setString(2, password);
 
             int result = preparedStatement.executeUpdate();
-            return result > 0;
+
+            if (result > 0) {
+                System.out.println("User " + username + " registered successfully.\n");
+            }
+            return false;
         } catch (Exception e){
             e.printStackTrace();
             return false;
@@ -97,13 +101,21 @@ public class UserService {
         return null; // Authentication failed
     }
 
+    /**
+     * Promote an user to admin rights.
+     * @param username The username to be promoted.
+     * @return Whether the promotion was successful or not.
+     */
     public boolean promoteToAdmin(String username) {
         String query = "UPDATE Users SET user_rights = 'admin' WHERE username = ? AND user_rights = 'authenticated'";
 
         try (PreparedStatement preparedStatement = conn.prepareStatement(query)){
             preparedStatement.setString(1, username);
             int result = preparedStatement.executeUpdate();
-            return result > 0;
+            if (result > 0){
+                System.out.println("User " + username + " promoted successfully!\n");
+            }
+            return false;
         } catch (Exception e) {
             e.printStackTrace();
             return false;
