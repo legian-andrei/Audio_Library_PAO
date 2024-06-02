@@ -12,4 +12,9 @@ public class Song {
     private String title;
     private String singer;
     private int release_year;
+
+    @Override
+    public String toString() {
+        return "[ID: " + getId() + "] " + getSinger() + " - " + getTitle() + "(" + getRelease_year() + ")";
+    }
 }

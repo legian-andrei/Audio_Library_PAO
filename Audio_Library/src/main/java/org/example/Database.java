@@ -1,13 +1,16 @@
 package org.example;
 
+import lombok.Getter;
+
 import java.sql.*;
 import java.util.concurrent.TimeUnit;
 
 public class Database {
-    static final String DATABASE_URL = "jdbc:mysql://localhost:3306/MySQL80";
+    static final String DATABASE_URL = "jdbc:mysql://localhost:3306/AudioLibrary?createDatabaseIfNotExist=true";
     static final String USER = "root";
     static final String PASSWORD = "rootpa55";
 
+    @Getter
     private Connection conn;
 
     /**
@@ -24,9 +27,9 @@ public class Database {
                     """
                     CREATE TABLE IF NOT EXISTS Users (
                                                 id int auto_increment PRIMARY KEY,
-                                                username varchar2(255) NOT NULL UNIQUE,
-                                                password varchar2(255) NOT NULL,
-                                                user_rights varchar2(255) NOT NULL
+                                                username varchar(255) NOT NULL UNIQUE,
+                                                password varchar(255) NOT NULL,
+                                                user_rights varchar(255) NOT NULL
                                             );
                     """;
 
@@ -34,8 +37,8 @@ public class Database {
                     """
                     CREATE TABLE IF NOT EXISTS Songs (
                                                 id int auto_increment PRIMARY KEY,
-                                                title varchar2(255) NOT NULL,
-                                                singer varchar2(255) NOT NULL,
+                                                title varchar(255) NOT NULL,
+                                                singer varchar(255) NOT NULL,
                                                 release_year int NOT NULL,
                                                 CONSTRAINT UniqueTitleSinger UNIQUE KEY (title, singer)
                                             );
@@ -45,8 +48,8 @@ public class Database {
                     """
                     CREATE TABLE IF NOT EXISTS Playlists (
                                                 id int auto_increment PRIMARY KEY,
-                                                name varchar2(255) NOT NULL,
-                                                userId varchar2(255) NOT NULL,
+                                                name varchar(255) NOT NULL,
+                                                userId int NOT NULL,
                                                 CONSTRAINT ForeignUserPlaylist FOREIGN KEY (userId) REFERENCES Users(id)
                                                     ON DELETE CASCADE,
                                                 CONSTRAINT UniqueUserPlaylist UNIQUE KEY (userId, name)
@@ -70,8 +73,9 @@ public class Database {
                     """
                     CREATE TABLE IF NOT EXISTS UserAuditor (
                                                 id int auto_increment PRIMARY KEY,
-                                                command varchar2(255) NOT NULL,
-                                                userId varchar2(255) NOT NULL,
+                                                command varchar(255) NOT NULL,
+                                                userId int NOT NULL,
+                                                timestamps TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
                                                 CONSTRAINT ForeignUserAudit FOREIGN KEY (userId) REFERENCES Users(id)
                                                     ON DELETE CASCADE
                                             );

@@ -13,4 +13,9 @@ public class Playlist {
     private int id;
     private int userId;
     private String name;
+
+    @Override
+    public String toString() {
+        return "[ID: " + getId() + "] " + getName();
+    }
 }

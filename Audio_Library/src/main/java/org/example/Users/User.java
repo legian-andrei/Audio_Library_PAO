@@ -7,10 +7,16 @@ import lombok.experimental.SuperBuilder;
 @SuperBuilder
 @NoArgsConstructor
 public abstract class User {
+    @Getter
     private int id;
     @Getter
     private String username;
     private String password;
     @Getter
     private String userType;
+
+    @Override
+    public String toString() {
+        return "[ID: " + getId() + "] " + getUsername() + " (" + getUserType().toUpperCase() + ")";
+    }
 }

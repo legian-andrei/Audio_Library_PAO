@@ -1,0 +1,17 @@
+{
+"playlistName": "playlist01user01",
+"songs": [
+  {
+    "id": "2",
+    "title": "Aurora",
+    "artist": "Coma",
+    "releaseDate": "2023"
+  },
+  {
+    "id": "4",
+    "title": "Cel mai frumos loc de pe pamant",
+    "artist": "Coma",
+    "releaseDate": "2016"
+  }
+]
+}
