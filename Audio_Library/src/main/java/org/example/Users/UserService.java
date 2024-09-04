@@ -88,7 +88,6 @@ public class UserService {
                             AuthenticatedUser authUser = AuthenticatedUser.builder()
                                     .id(userId)
                                     .username(username)
-                                    .password(password)
                                     .userType("authenticated")
                                     .build();
                             return authUser;
@@ -96,7 +95,6 @@ public class UserService {
                             AdminUser admin = AdminUser.builder()
                                     .id(userId)
                                     .username(username)
-                                    .password(password)
                                     .userType("authenticated")
                                     .build();
                             return admin;
@@ -130,6 +128,11 @@ public class UserService {
         }
     }
 
+    /**
+     * Verify if the username exists in the database
+     * @param username The username to be verified.
+     * @return Whether the username exists or not.
+     */
     private boolean checkUsername(String username){
         String query = "SELECT COUNT(*) AS userCount FROM Users WHERE username = ?";
         try (PreparedStatement preparedStatement = conn.prepareStatement(query)){
@@ -148,10 +151,20 @@ public class UserService {
         }
     }
 
+    /**
+     * Get the user id from a User instance
+     * @param user The user instance
+     * @return The user id
+     */
     public final int getUserId(User user){
         return user.getId();
     }
 
+    /**
+     * Get the user id from a username
+     * @param username The username
+     * @return The user id
+     */
     public final int getUserId(String username){
         if (checkUsername(username)){
             return -1;
@@ -170,6 +183,11 @@ public class UserService {
         return -1;
     }
 
+    /**
+     * Get the number of users in the database;
+     * Used to see if a user is the first one registered
+     * @return The number of users in the database
+     */
     public final int countUsers(){
         String query = "SELECT COUNT(*) AS countUsers FROM Users;";
         int res = -1;
@@ -184,6 +202,12 @@ public class UserService {
         return res;
     }
 
+    /**
+     * Get users from the database
+     * @param page: the page number to be retrieved
+     * @param pageSize: the number of users to be retrieved
+     * @return A list of users
+     */
     public final List<User> getUsers(int page, int pageSize){
         String query = """
                 SELECT id, username, user_rights

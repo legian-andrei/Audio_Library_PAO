@@ -13,9 +13,9 @@ public class AuditService {
 
     /**
      * Log command into database
-     * @param userId
-     * @param command
-     * @return
+     * @param userId the user id that executed the command
+     * @param command the command executed
+     * @return true if the command was logged successfully, false otherwise
      */
     public final boolean logCommand(int userId, String command){
         String query = "INSERT INTO UserAuditor (userId, command) VALUES (?,?);";
@@ -34,10 +34,10 @@ public class AuditService {
 
     /**
      * Get the audit logs for a specified user.
-     * @param userId
-     * @param page
-     * @param pageSize
-     * @return
+     * @param userId the user id to get the logs for
+     * @param page the page number
+     * @param pageSize the number of logs per page
+     * @return a list of audit logs
      */
     public final List<AuditLog> getAuditLogs(int userId, int page, int pageSize){
         String query = """
@@ -63,10 +63,15 @@ public class AuditService {
             return logs;
         } catch (Exception e) {
             e.printStackTrace();
-            return null;
+            return logs;
         }
     }
 
+    /**
+     * Get the number of audit logs for a specified user.
+     * @param userId the user id to get the number of logs for
+     * @return the number of audit logs
+     */
     public final int getAuditSize(int userId){
         String query = """
                 SELECT COUNT(*) AS countAudit

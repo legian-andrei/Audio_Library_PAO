@@ -1,22 +1,15 @@
 package org.example.Users;
 
-import lombok.*;
+import lombok.Getter;
+import lombok.NoArgsConstructor;
 import lombok.experimental.SuperBuilder;
 
-@Setter
+@Getter
 @SuperBuilder
 @NoArgsConstructor
 public abstract class User {
-    @Getter
-    private int id;
-    @Getter
-    private String username;
-    private String password;
-    @Getter
-    private String userType;
-
-    @Override
-    public String toString() {
-        return "[ID: " + getId() + "] " + getUsername() + " (" + getUserType().toUpperCase() + ")";
-    }
+    protected int id;
+    protected String username;
+    protected String userType;
+    public abstract void showMenu();
 }

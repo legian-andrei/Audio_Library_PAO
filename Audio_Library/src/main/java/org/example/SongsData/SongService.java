@@ -18,9 +18,9 @@ public class SongService {
 
     /**
      * Create a new song
-     * @param title
-     * @param singer
-     * @param release_year
+     * @param title Song title
+     * @param singer Song singer
+     * @param release_year Song release year
      * @return Wheather the song was created or not
      */
     public final boolean addSong(String title, String singer, int release_year){
@@ -46,7 +46,12 @@ public class SongService {
         }
     }
 
-
+    /**
+     * Create a new playlist
+     * @param userId User ID of the user creating the playlist
+     * @param name Playlist name
+     * @return Whether the playlist was created or not
+     */
     public final boolean createPlaylist(int userId, String name){
         if (!checkPlaylist(userId, name)) {
             System.out.println("Playlist " + name + " already exists!");
@@ -68,6 +73,12 @@ public class SongService {
         return false;
     }
 
+    /**
+     * Add a song to the playlist
+     * @param playlistId Playlist ID to add the song to
+     * @param songId Song ID to add to the playlist
+     * @return Whether the song was added to the playlist or not
+     */
     public final boolean addSongToPlaylist(int playlistId, int songId){
         if (!checkSongIntoPlaylist(playlistId, songId)){
             System.out.println("Song already exists in playlist.");
@@ -91,9 +102,9 @@ public class SongService {
 
     /**
      * Check if a song already exists
-     * @param title
-     * @param singer
-     * @return
+     * @param title Song title to check
+     * @param singer Song singer to check
+     * @return Whether the song exists or not
      */
     private boolean checkSong(String title, String singer){
         String query = "SELECT COUNT(*) AS songCount FROM Songs WHERE title = ? AND singer = ?;";
@@ -144,9 +155,9 @@ public class SongService {
 
     /**
      * Get a paginated view of songs
-     * @param page
-     * @param pageSize
-     * @return
+     * @param page Page number
+     * @param pageSize Number of songs per page
+     * @return List of songs
      */
     public final List<Song> getSongs(int page, int pageSize){
         String query = "SELECT id, title, singer, release_year FROM Songs LIMIT ? OFFSET ?;";
@@ -167,16 +178,16 @@ public class SongService {
             return songs;
         } catch (Exception e){
             e.printStackTrace();
-            return null;
+            return songs;
         }
     }
 
     /**
      * Get a paginated view of songs from a certain playlist
-     * @param playlistId
-     * @param page
-     * @param pageSize
-     * @return
+     * @param playlistId Playlist ID to get songs from
+     * @param page Page number
+     * @param pageSize Number of songs per page
+     * @return List of songs
      */
     public final List<Song> getSongsInPlaylist(int playlistId, int page, int pageSize){
         String query = """
@@ -204,14 +215,14 @@ public class SongService {
             return songs;
         } catch (Exception e){
             e.printStackTrace();
-            return null;
+            return songs;
         }
     }
 
     /**
      * Get songs from a certain playlist
-     * @param playlistId
-     * @return
+     * @param playlistId Playlist ID to get songs from
+     * @return List of songs
      */
     public final List<Song> getSongsInPlaylist(int playlistId){
         String query = """
@@ -242,8 +253,8 @@ public class SongService {
 
     /**
      * Get the number of songs in a playlist; used for pagination
-     * @param playlistId
-     * @return
+     * @param playlistId Playlist ID to get the number of songs from
+     * @return Number of songs in the playlist
      */
     public final int countSongsInPlaylist(int playlistId){
         String query = "SELECT COUNT(*) AS songCount FROM PlaylistsSongs WHERE playlistId = ?;";
@@ -261,6 +272,10 @@ public class SongService {
         return -1;
     }
 
+    /**
+     * Get the number of songs in the database; used for pagination
+     * @return Number of songs in the database
+     */
     public final int countSongs(){
         String query = "SELECT COUNT(*) AS songCount FROM Songs;";
 
@@ -278,9 +293,9 @@ public class SongService {
 
     /**
      * Check if a playlist already exists for a specified user
-     * @param userId
-     * @param name
-     * @return
+     * @param userId User ID to check the playlist for
+     * @param name Playlist name to check
+     * @return Whether the playlist exists or not
      */
     private boolean checkPlaylist(int userId, String name){
         String query = "SELECT COUNT(*) AS playlistCount FROM Playlists WHERE userId = ? AND name = ?;";
@@ -301,6 +316,13 @@ public class SongService {
         }
     }
 
+    /**
+     * Get the playlists for a specified user;
+     * @param userId User ID to get the playlists for
+     * @param page Page number
+     * @param pageSize Number of playlists per page
+     * @return List of playlists
+     */
     public final List<Playlist> getPlaylistsByUser(int userId, int page, int pageSize){
         String query = """
                 SELECT Playlists.id AS playlistId, Playlists.name AS playlistName
@@ -327,6 +349,11 @@ public class SongService {
         return playlists;
     }
 
+    /**
+     * Get the playlists for a specified user;
+     * @param userId User ID to get the playlists for
+     * @return List of playlists
+     */
     public final List<Playlist> getPlaylistsByUser(int userId){
         String query = """
                 SELECT Playlists.id AS playlistId, Playlists.name AS playlistName
@@ -353,8 +380,8 @@ public class SongService {
 
     /**
      * Get playlist ID from a certain user having a certain name
-     * @param userId
-     * @param playlistName
+     * @param userId User ID to get the playlist ID for
+     * @param playlistName Playlist name to get the ID for
      * @return Playlist ID or -1 if the playlist does not exist for the specified user.
      */
     public final int getPlaylistId (int userId, String playlistName) {
@@ -381,9 +408,9 @@ public class SongService {
 
     /**
      * Check if a song already exists within a playlist.
-     * @param playlistId
-     * @param songId
-     * @return
+     * @param playlistId Playlist ID to check the song for
+     * @param songId Song ID to check
+     * @return Whether the song exists in the playlist or not
      */
     private boolean checkSongIntoPlaylist(int playlistId, int songId) {
         String query = "SELECT COUNT(*) AS songIntoPlaylistCount FROM PlaylistsSongs WHERE playlistId = ? AND songId = ?;";
