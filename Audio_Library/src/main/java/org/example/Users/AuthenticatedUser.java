@@ -25,6 +25,6 @@ public class AuthenticatedUser extends User{
                 Press ENTER to exit.""");    }
     @Override
     public String toString() {
-        return "[ID: " + getId() + "] " + getUsername() + " (" + getUserType().toUpperCase() + ")";
+        return "[ID: " + getId() + "] " + getUsername() + " (" + getUserType().name() + ")";
     }
 }

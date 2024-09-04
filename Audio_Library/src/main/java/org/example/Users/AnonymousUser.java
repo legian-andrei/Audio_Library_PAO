@@ -8,7 +8,7 @@ public final class AnonymousUser extends User {
     public AnonymousUser() {
         this.id = 0;
         this.username = null;
-        this.userType = "Anonymous User";
+        this.userType = UserRole.ANONYMOUS;
     }
     @Override
     public void showMenu() {

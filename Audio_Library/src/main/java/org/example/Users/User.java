@@ -10,6 +10,6 @@ import lombok.experimental.SuperBuilder;
 public abstract class User {
     protected int id;
     protected String username;
-    protected String userType;
+    protected UserRole userType;
     public abstract void showMenu();
 }

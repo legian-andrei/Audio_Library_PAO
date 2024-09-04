@@ -42,16 +42,17 @@ public class UserService {
             return false;
         }
 
-        String query;
+        String query = "INSERT INTO Users (username, password, user_rights) VALUES (?,?,?);";
         if (isFirstUser()){
-            query = "INSERT INTO Users (username, password, user_rights) VALUES (?,?,'admin');";
         } else {
-            query = "INSERT INTO Users (username, password, user_rights) VALUES (?,?,'authenticated');";
         }
 
         try (PreparedStatement preparedStatement = conn.prepareStatement(query)) {
             preparedStatement.setString(1, username);
             preparedStatement.setString(2, password);
+
+            UserRole userRole = isFirstUser() ? UserRole.ADMIN : UserRole.AUTHENTICATED;
+            preparedStatement.setString(3, userRole.name());
 
             int result = preparedStatement.executeUpdate();
 
@@ -79,25 +80,23 @@ public class UserService {
             if (resultSet.next()) {
                 Integer userId = resultSet.getInt("id");
                 String dbPassword = resultSet.getString("password");
-                String userRights = resultSet.getString("user_rights");
+                UserRole userRole = UserRole.valueOf(resultSet.getString("user_rights"));
 
                 if (dbPassword.equals(password)) {
                     System.out.println("Welcome back, " + username + "!");
-                    switch (userRights.toLowerCase()) {
-                        case "authenticated":
-                            AuthenticatedUser authUser = AuthenticatedUser.builder()
+                    switch (userRole) {
+                        case AUTHENTICATED:
+                            return AuthenticatedUser.builder()
                                     .id(userId)
                                     .username(username)
-                                    .userType("authenticated")
+                                    .userType(userRole)
                                     .build();
-                            return authUser;
-                        case "admin":
-                            AdminUser admin = AdminUser.builder()
+                        case ADMIN:
+                            return AdminUser.builder()
                                     .id(userId)
                                     .username(username)
-                                    .userType("authenticated")
+                                    .userType(userRole)
                                     .build();
-                            return admin;
                     }
                 }
             }
@@ -113,7 +112,7 @@ public class UserService {
      * @return Whether the promotion was successful or not.
      */
     public final boolean promoteToAdmin(String username) {
-        String query = "UPDATE Users SET user_rights = 'admin' WHERE username = ? AND user_rights = 'authenticated'";
+        String query = "UPDATE Users SET user_rights = 'ADMIN' WHERE username = ? AND user_rights = 'AUTHENTICATED'";
 
         try (PreparedStatement preparedStatement = conn.prepareStatement(query)){
             preparedStatement.setString(1, username);
@@ -219,21 +218,22 @@ public class UserService {
             preparedStatement.setInt(2, (page - 1) * pageSize);
             ResultSet resultSet = preparedStatement.executeQuery();
             while (resultSet.next()){
-                if (resultSet.getString("user_rights").equals("admin")){
-                    AdminUser user = AdminUser.builder()
+                UserRole userRole = UserRole.valueOf(resultSet.getString("user_rights"));
+                User user;
+                if (userRole == UserRole.ADMIN){
+                    user = AdminUser.builder()
                             .id(resultSet.getInt("id"))
                             .username(resultSet.getString("username"))
-                            .userType("admin")
+                            .userType(userRole)
                             .build();
-                    users.add(user);
                 } else {
-                    AuthenticatedUser user = AuthenticatedUser.builder()
+                    user = AuthenticatedUser.builder()
                             .id(resultSet.getInt("id"))
                             .username(resultSet.getString("username"))
-                            .userType("authenticated")
+                            .userType(userRole)
                             .build();
-                    users.add(user);
                 }
+                users.add(user);
             }
         } catch (Exception e){
             e.printStackTrace();
