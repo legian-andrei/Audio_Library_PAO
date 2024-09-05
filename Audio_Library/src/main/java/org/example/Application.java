@@ -1,20 +1,17 @@
 package org.example;
 
-import org.example.SongsData.SongService;
 import org.example.Users.*;
-import java.util.InputMismatchException;
 
 import java.util.Scanner;
 
 public final class Application {
     private static Database database = new Database();
-    private static UserService userService;
     Scanner scanner = new Scanner(System.in);
     private final UserManager userManager;
     public Application() {
         System.out.println("Starting...");
         database.connect();
-        userManager = new UserManager(scanner, userService, database);
+        userManager = new UserManager(scanner, database);
     }
 
     /**

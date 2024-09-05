@@ -23,9 +23,10 @@ public final class AdminUser extends AuthenticatedUser{
                 6. Add song to playlist
                 7. Export playlist to CSV
                 8. Export playlist to JSON
-                9. View all users
-                10. Promote user to admin
-                11. View audit of a user
+                9. Export playlist to TXT
+                10. View all users
+                11. Promote user to admin
+                12. View audit of a user
                 Press ENTER to exit.""");
     }
     @Override

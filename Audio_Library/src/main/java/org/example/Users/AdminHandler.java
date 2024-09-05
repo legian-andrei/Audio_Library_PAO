@@ -39,13 +39,16 @@ public class AdminHandler extends AuthenticatedHandler {
             case "8": // Export to JSON
                 exportToJSON();
                 break;
-            case "9": // List users
+            case "9": // Export to TXT
+                exportToTXT();
+                break;
+            case "10": // List users
                 listUsers();
                 break;
-            case "10": // Promote user to admin
+            case "11": // Promote user to admin
                 promoteUser();
                 break;
-            case "11": // View audit
+            case "12": // View audit
                 listAudit();
                 break;
             default:

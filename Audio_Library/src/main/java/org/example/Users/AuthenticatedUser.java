@@ -22,6 +22,7 @@ public class AuthenticatedUser extends User{
                 5. Add song to playlist
                 6. Export playlist to CSV
                 7. Export playlist to JSON
+                8. Export playlist to TXT
                 Press ENTER to exit.""");    }
     @Override
     public String toString() {

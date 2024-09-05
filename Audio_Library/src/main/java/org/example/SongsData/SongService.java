@@ -247,7 +247,7 @@ public class SongService {
             return songs;
         } catch (Exception e){
             e.printStackTrace();
-            return null;
+            return songs;
         }
     }
 
@@ -426,79 +426,6 @@ public class SongService {
                 }
             }
             return false;
-        } catch (Exception e) {
-            e.printStackTrace();
-            return false;
-        }
-    }
-
-    /**
-     * Export playlist to CSV file
-     * @param playlistId
-     * @param playlistName
-     * @param user
-     * @return
-     */
-    public final boolean exportPlaylistToCSV(int playlistId, String playlistName, User user){
-        List<Song> songs = getSongsInPlaylist(playlistId);
-        if (songs.isEmpty()){
-            return false;
-        }
-        String dateStr = new SimpleDateFormat("yyyyMMdd").format(new Date());
-        String fileName = "export_" + user.getUsername() + "_" + playlistName + "_" + dateStr + ".csv";
-
-        try(FileWriter writer = new FileWriter(fileName)){
-            writer.append("Playlist Name," + playlistName + "\n");
-            writer.append("Sond ID,Song Name,Artist,Release Date\n");
-            for (Song song : songs) {
-                writer.append(Integer.toString(song.getId())).append(',')
-                        .append(song.getTitle()).append(',')
-                        .append(song.getSinger()).append(',')
-                        .append(Integer.toString(song.getRelease_year())).append('\n');
-            }
-            System.out.println("Playlist exported to " + fileName);
-            return true;
-        }catch(Exception e){
-            e.printStackTrace();
-        }
-        return false;
-    }
-
-    /**
-     * Export playlist to JSON file
-     * @param playlistId
-     * @param playlistName
-     * @param user
-     * @return
-     */
-    public final boolean exportPlaylistToJSON(int playlistId, String playlistName, User user){
-        List<Song> songs = getSongsInPlaylist(playlistId);
-        if (songs.isEmpty()){
-            return false;
-        }
-        String dateStr = new SimpleDateFormat("yyyyMMdd").format(new Date());
-        String fileName = "export_" + user.getUsername() + "_" + playlistName + "_" + dateStr + ".json";
-        try (FileWriter writer = new FileWriter(fileName)) {
-            writer.append("{\n");
-            writer.append("\"playlistName\": \"" + playlistName + "\",\n");
-            writer.append("\"songs\": [\n");
-            for (int i = 0; i < songs.size(); i++) {
-                Song song = songs.get(i);
-                writer.append("  {\n");
-                writer.append("    \"id\": \"" + Integer.toString(song.getId()) + "\",\n");
-                writer.append("    \"title\": \"" + song.getTitle() + "\",\n");
-                writer.append("    \"artist\": \"" + song.getSinger() + "\",\n");
-                writer.append("    \"releaseDate\": \"" + Integer.toString(song.getRelease_year()) + "\"\n");
-                writer.append("  }");
-                if (i < songs.size() - 1) {
-                    writer.append(",");
-                }
-                writer.append("\n");
-            }
-            writer.append("]\n");
-            writer.append("}\n");
-            System.out.println("Playlist exported to " + fileName);
-            return true;
         } catch (Exception e) {
             e.printStackTrace();
             return false;

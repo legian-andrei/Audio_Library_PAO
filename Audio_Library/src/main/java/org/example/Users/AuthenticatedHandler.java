@@ -1,6 +1,10 @@
 package org.example.Users;
 
 import org.example.Database;
+import org.example.Exporter.CSVPlaylistExporter;
+import org.example.Exporter.JSONPlaylistExporter;
+import org.example.Exporter.PlaylistExporter;
+import org.example.Exporter.TXTPlaylistExporter;
 import org.example.SongsData.*;
 
 import java.util.List;
@@ -47,6 +51,9 @@ public class AuthenticatedHandler implements UserHandler {
                 break;
             case "7": // Export to JSON
                 exportToJSON();
+                break;
+            case "8": // Export to TXT
+                exportToTXT();
                 break;
             default:
                 System.out.println("""
@@ -264,15 +271,22 @@ public class AuthenticatedHandler implements UserHandler {
         UserService userService = new UserService(database.getConn());
         SongService songService = new SongService(database.getConn());
         AuditService auditService = new AuditService(database.getConn());
+        PlaylistExporter playlistExporter = new CSVPlaylistExporter(songService);
 
         System.out.println("Enter playlist name to export:");
-        String playlistNameForCSV = scanner.nextLine();
-        int playlistIdForCSV = songService.getPlaylistId(userService.getUserId(currentUser), playlistNameForCSV);
+        String playlistName = scanner.nextLine();
+        int playlistId = songService.getPlaylistId(userService.getUserId(currentUser), playlistName);
 
-        if (playlistIdForCSV != -1) {
-            if (songService.exportPlaylistToCSV(playlistIdForCSV, playlistNameForCSV, currentUser)) {
+        if (playlistId != -1) {
+            if (playlistExporter.exportPlaylist(
+                    Playlist.builder()
+                            .id(playlistId)
+                            .name(playlistName)
+                            .userId(currentUser.getId())
+                            .build(),
+                    currentUser.getUsername())) {
                 System.out.println("Playlist exported successfully.");
-                auditService.logCommand(userService.getUserId(currentUser), "EXPORT_CSV_" + playlistNameForCSV);
+                auditService.logCommand(userService.getUserId(currentUser), "EXPORT_CSV_" + playlistName);
             } else {
                 System.out.println("Failed to export playlist.");
             }
@@ -286,15 +300,48 @@ public class AuthenticatedHandler implements UserHandler {
         UserService userService = new UserService(database.getConn());
         SongService songService = new SongService(database.getConn());
         AuditService auditService = new AuditService(database.getConn());
+        PlaylistExporter playlistExporter = new JSONPlaylistExporter(songService);
 
         System.out.println("Enter playlist name to export:");
-        String playlistNameForJSON = scanner.nextLine();
-        int playlistIdForJSON = songService.getPlaylistId(userService.getUserId(currentUser), playlistNameForJSON);
+        String playlistName = scanner.nextLine();
+        int playlistId = songService.getPlaylistId(userService.getUserId(currentUser), playlistName);
 
-        if (playlistIdForJSON != -1) {
-            if (songService.exportPlaylistToJSON(playlistIdForJSON, playlistNameForJSON, currentUser)) {
+        if (playlistId != -1) {
+            if (playlistExporter.exportPlaylist(
+                    Playlist.builder()
+                            .id(playlistId)
+                            .name(playlistName)
+                            .userId(currentUser.getId())
+                            .build(),
+                    currentUser.getUsername())) {
                 System.out.println("Playlist exported successfully.");
-                auditService.logCommand(userService.getUserId(currentUser), "EXPORT_JSON_" + playlistNameForJSON);
+                auditService.logCommand(userService.getUserId(currentUser), "EXPORT_JSON_" + playlistName);
+            } else {
+                System.out.println("Failed to export playlist.");
+            }
+        }
+    }
+
+    protected void exportToTXT(){
+        UserService userService = new UserService(database.getConn());
+        SongService songService = new SongService(database.getConn());
+        AuditService auditService = new AuditService(database.getConn());
+        PlaylistExporter playlistExporter = new TXTPlaylistExporter(songService);
+
+        System.out.println("Enter playlist name to export:");
+        String playlistName = scanner.nextLine();
+        int playlistId = songService.getPlaylistId(userService.getUserId(currentUser), playlistName);
+
+        if (playlistId != -1) {
+            if (playlistExporter.exportPlaylist(
+                    Playlist.builder()
+                            .id(playlistId)
+                            .name(playlistName)
+                            .userId(currentUser.getId())
+                            .build(),
+                    currentUser.getUsername())) {
+                System.out.println("Playlist exported successfully.");
+                auditService.logCommand(userService.getUserId(currentUser), "EXPORT_TXT_" + playlistName);
             } else {
                 System.out.println("Failed to export playlist.");
             }

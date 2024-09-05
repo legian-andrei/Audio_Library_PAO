@@ -2,7 +2,6 @@ package org.example.Users;
 
 import org.example.Database;
 import org.example.Exceptions.DuplicateUsernameException;
-import org.example.Main;
 
 import java.util.Scanner;
 
@@ -17,9 +16,8 @@ public class UserManager {
      * Constructor for the UserManager class.
      * @param sc: the scanner object
      */
-    public UserManager(Scanner sc, UserService us, Database db){
+    public UserManager(Scanner sc, Database db){
         scanner = sc;
-        userService = us;
         database = db;
         userService = new UserService(database.getConn());
     }
