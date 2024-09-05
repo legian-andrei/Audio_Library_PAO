@@ -1,6 +1,7 @@
 package org.example.Users;
 
 import org.example.Database;
+import org.example.Exceptions.DuplicateUsernameException;
 import org.example.Main;
 
 import java.util.Scanner;
@@ -71,10 +72,14 @@ public class UserManager {
             return;
         }
 
-        if (userService.register(username, password)){
-            System.out.println("User " + username + " registered successfully.\n");
-        } else {
-            System.out.println("Registration failed. Please try again!");
+        try {
+            if (userService.register(username, password)) {
+                System.out.println("User " + username + " registered successfully.\n");
+            } else {
+                System.out.println("Registration failed. Please try again!");
+            }
+        } catch (DuplicateUsernameException e){
+            System.out.println(e.getMessage() + " Please try again.");
         }
     }
 

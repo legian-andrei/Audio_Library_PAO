@@ -1,5 +1,9 @@
 package org.example.Users;
 
+import org.example.Exceptions.AlreadyAdminException;
+import org.example.Exceptions.DuplicateUsernameException;
+import org.example.Exceptions.UsernameNotFoundException;
+
 import java.sql.*;
 import java.util.ArrayList;
 import java.util.List;
@@ -36,16 +40,12 @@ public class UserService {
      * @param password The password for the user to be created
      * @return Whether the user was created or not
      */
-    public final boolean register(String username, String password){
+    public final boolean register(String username, String password) throws DuplicateUsernameException {
         if (!checkUsername(username)) {
-            System.out.println("User " + username + "already exists!");
-            return false;
+            throw new DuplicateUsernameException("Username " + username + " already exists.");
         }
 
         String query = "INSERT INTO Users (username, password, user_rights) VALUES (?,?,?);";
-        if (isFirstUser()){
-        } else {
-        }
 
         try (PreparedStatement preparedStatement = conn.prepareStatement(query)) {
             preparedStatement.setString(1, username);
@@ -111,9 +111,16 @@ public class UserService {
      * @param username The username to be promoted.
      * @return Whether the promotion was successful or not.
      */
-    public final boolean promoteToAdmin(String username) {
+    public final boolean promoteToAdmin(String username) throws AlreadyAdminException, UsernameNotFoundException {
         String query = "UPDATE Users SET user_rights = 'ADMIN' WHERE username = ? AND user_rights = 'AUTHENTICATED'";
 
+        if (!checkUsername(username)){
+            if (isAdmin(username)){
+                throw new AlreadyAdminException("User " + username + " is already an admin.");
+            }
+        } else {
+            throw new UsernameNotFoundException("User " + username + " not found.");
+        }
         try (PreparedStatement preparedStatement = conn.prepareStatement(query)){
             preparedStatement.setString(1, username);
             int result = preparedStatement.executeUpdate();
@@ -121,10 +128,29 @@ public class UserService {
                 return true;
             }
             return false;
-        } catch (Exception e) {
-            e.printStackTrace();
-            return false;
+        } catch (SQLException e) {
+            System.out.println("SQL exception: " + e.getMessage());
         }
+        return false;
+    }
+
+    /**
+     * Check if the user is an admin
+     * @param username The username to be checked
+     * @return Whether the user is an admin or not
+     */
+    private boolean isAdmin(String username){
+        String query = "SELECT user_rights FROM Users WHERE username = ?;";
+        try (PreparedStatement preparedStatement = conn.prepareStatement(query)){
+            preparedStatement.setString(1, username);
+            ResultSet resultSet = preparedStatement.executeQuery();
+            if (resultSet.next()){
+                return resultSet.getString("user_rights").equals("ADMIN");
+            }
+        } catch (SQLException e) {
+            System.out.println("SQL exception: " + e.getMessage());
+        }
+        return false;
     }
 
     /**
@@ -144,10 +170,10 @@ public class UserService {
                 }
             }
             return true;
-        } catch (Exception e) {
-            e.printStackTrace();
-            return false;
+        } catch (SQLException e) {
+            System.out.println("SQL exception: " + e.getMessage());
         }
+        return false;
     }
 
     /**
@@ -164,9 +190,9 @@ public class UserService {
      * @param username The username
      * @return The user id
      */
-    public final int getUserId(String username){
+    public final int getUserId(String username) throws UsernameNotFoundException {
         if (checkUsername(username)){
-            return -1;
+            throw new UsernameNotFoundException("User " + username + " not found.");
         } else {
             String query = "SELECT id FROM Users WHERE username = ?;";
             try (PreparedStatement preparedStatement = conn.prepareStatement(query)){
@@ -175,8 +201,8 @@ public class UserService {
                 if (resultSet.next()){
                     return resultSet.getInt("id");
                 }
-            } catch (Exception e){
-                e.printStackTrace();
+            } catch (SQLException e) {
+                System.out.println("SQL exception: " + e.getMessage());
             }
         }
         return -1;

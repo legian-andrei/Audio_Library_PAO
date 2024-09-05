@@ -30,6 +30,6 @@ public final class AdminUser extends AuthenticatedUser{
     }
     @Override
     public String toString() {
-        return "[ID: " + getId() + "] " + getUsername() + " (" + getUserType().toUpperCase() + ")";
+        return "[ID: " + getId() + "] " + getUsername() + " (" + getUserType().name() + ")";
     }
 }

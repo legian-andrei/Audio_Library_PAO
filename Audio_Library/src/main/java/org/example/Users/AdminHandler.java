@@ -1,6 +1,8 @@
 package org.example.Users;
 
 import org.example.Database;
+import org.example.Exceptions.AlreadyAdminException;
+import org.example.Exceptions.UsernameNotFoundException;
 import org.example.SongsData.SongService;
 
 import java.util.Scanner;
@@ -140,11 +142,14 @@ public class AdminHandler extends AuthenticatedHandler {
         System.out.println("Enter username to promote:");
         String username = scanner.nextLine();
 
-        if (userService.promoteToAdmin(username)){
+        try {
+            userService.promoteToAdmin(username);
             System.out.println("User " + username + " promoted successfully!\n");
             auditService.logCommand(userService.getUserId(currentUser), "PROMOTE_" + username);
-        } else {
-            System.out.println("Failed to promote the username.");
+        } catch (AlreadyAdminException | UsernameNotFoundException e) {
+            System.out.println("Failed to promote user. " + e.getMessage());
+        } catch (Exception e) {
+            System.out.println("Failed to promote user.");
         }
     }
 
@@ -157,11 +162,20 @@ public class AdminHandler extends AuthenticatedHandler {
 
         System.out.println("Enter username: ");
         String username = scanner.nextLine();
-        int userId = userService.getUserId(username);
+        int userId = -1;
+
+        try {
+            userId = userService.getUserId(username);
+        } catch (UsernameNotFoundException e) {
+            System.out.println("Username not found.");
+            return;
+        }
+
         if (userId == -1) {
             System.out.println("Failed to find the user.");
             return;
         }
+
 
         auditService.logCommand(userService.getUserId(currentUser), "AUDIT_" + userId);
         int pageSize = 5;
