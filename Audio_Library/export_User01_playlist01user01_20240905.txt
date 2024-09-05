@@ -1,0 +1,11 @@
+playlistName -> playlist01user01
+userID -> 3
+songNo -> 2
+songID -> 2
+songTitle -> Aurora
+songArtist -> Coma
+songReleaseDate -> 2023
+songID -> 4
+songTitle -> Cel mai frumos loc de pe pamant
+songArtist -> Coma
+songReleaseDate -> 2016

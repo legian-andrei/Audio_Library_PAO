@@ -104,9 +104,9 @@ public class SongService {
      * Check if a song already exists
      * @param title Song title to check
      * @param singer Song singer to check
-     * @return Whether the song exists or not
+     * @return True is the song does not exist, false otherwise
      */
-    private boolean checkSong(String title, String singer){
+    public boolean checkSong(String title, String singer){
         String query = "SELECT COUNT(*) AS songCount FROM Songs WHERE title = ? AND singer = ?;";
         try (PreparedStatement preparedStatement = conn.prepareStatement(query)){
             preparedStatement.setString(1, title);
@@ -297,7 +297,7 @@ public class SongService {
      * @param name Playlist name to check
      * @return Whether the playlist exists or not
      */
-    private boolean checkPlaylist(int userId, String name){
+    public boolean checkPlaylist(int userId, String name){
         String query = "SELECT COUNT(*) AS playlistCount FROM Playlists WHERE userId = ? AND name = ?;";
         try (PreparedStatement preparedStatement = conn.prepareStatement(query)){
             preparedStatement.setString(1, Integer.toString(userId));

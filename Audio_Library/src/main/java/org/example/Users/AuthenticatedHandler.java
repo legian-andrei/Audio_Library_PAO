@@ -1,10 +1,8 @@
 package org.example.Users;
 
 import org.example.Database;
-import org.example.Exporter.CSVPlaylistExporter;
-import org.example.Exporter.JSONPlaylistExporter;
-import org.example.Exporter.PlaylistExporter;
-import org.example.Exporter.TXTPlaylistExporter;
+import org.example.Exporter.*;
+import org.example.Importer.*;
 import org.example.SongsData.*;
 
 import java.util.List;
@@ -55,11 +53,65 @@ public class AuthenticatedHandler implements UserHandler {
             case "8": // Export to TXT
                 exportToTXT();
                 break;
+            case "9": // Import from CSV
+                importFromCSV();
+                break;
+            case "10": // Import from JSON
+                importFromJSON();
+                break;
+            case "11": // Import from TXT
+                importFromTXT();
+                break;
             default:
                 System.out.println("""
                         =======================================================
                         Invalid choice! Please select one of the options above.""");
                 break;
+        }
+    }
+
+    /**
+     * Imports a playlist from a TXT file.
+     */
+    protected void importFromTXT() {
+        System.out.println("Enter file path: ");
+        String filePath = scanner.nextLine();
+
+        PlaylistImporter playlistImporter = new TXTPlaylistImporter(new SongService(database.getConn()));
+        if (playlistImporter.importPlaylist(filePath)) {
+            System.out.println("Playlist imported successfully.");
+        } else {
+            System.out.println("Failed to import playlist.");
+        }
+    }
+
+    /**
+     * Imports a playlist from a JSON file.
+     */
+    protected void importFromJSON() {
+        System.out.println("Enter file path: ");
+        String filePath = scanner.nextLine();
+
+        PlaylistImporter playlistImporter = new JSONPlaylistImporter(new SongService(database.getConn()));
+        if (playlistImporter.importPlaylist(filePath)) {
+            System.out.println("Playlist imported successfully.");
+        } else {
+            System.out.println("Failed to import playlist.");
+        }
+    }
+
+    /**
+     * Imports a playlist from a CSV file.
+     */
+    protected void importFromCSV() {
+        System.out.println("Enter file path: ");
+        String filePath = scanner.nextLine();
+
+        PlaylistImporter playlistImporter = new CSVPlaylistImporter(new SongService(database.getConn()));
+        if (playlistImporter.importPlaylist(filePath)) {
+            System.out.println("Playlist imported successfully.");
+        } else {
+            System.out.println("Failed to import playlist.");
         }
     }
 
@@ -133,7 +185,6 @@ public class AuthenticatedHandler implements UserHandler {
                     2. Go to next page
                     3. Go back""");
             String ch = scanner.nextLine();
-            scanner.nextLine();
             switch (ch){
                 case "1": //last page
                     if (currentPage == 1){
@@ -285,7 +336,6 @@ public class AuthenticatedHandler implements UserHandler {
                             .userId(currentUser.getId())
                             .build(),
                     currentUser.getUsername())) {
-                System.out.println("Playlist exported successfully.");
                 auditService.logCommand(userService.getUserId(currentUser), "EXPORT_CSV_" + playlistName);
             } else {
                 System.out.println("Failed to export playlist.");
@@ -314,7 +364,6 @@ public class AuthenticatedHandler implements UserHandler {
                             .userId(currentUser.getId())
                             .build(),
                     currentUser.getUsername())) {
-                System.out.println("Playlist exported successfully.");
                 auditService.logCommand(userService.getUserId(currentUser), "EXPORT_JSON_" + playlistName);
             } else {
                 System.out.println("Failed to export playlist.");
@@ -340,7 +389,6 @@ public class AuthenticatedHandler implements UserHandler {
                             .userId(currentUser.getId())
                             .build(),
                     currentUser.getUsername())) {
-                System.out.println("Playlist exported successfully.");
                 auditService.logCommand(userService.getUserId(currentUser), "EXPORT_TXT_" + playlistName);
             } else {
                 System.out.println("Failed to export playlist.");

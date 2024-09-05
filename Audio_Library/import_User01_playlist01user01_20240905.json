@@ -1,0 +1,12 @@
+{
+"playlistName": "playlist01admin01",
+"userID": "1",
+"songs": [
+  {
+    "id": "1",
+    "title": "Contratimp",
+    "artist": "Ana Coman",
+    "releaseDate": "2023"
+  }
+]
+}
